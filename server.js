@@ -38,7 +38,61 @@ app.post('/users', verifyToken, (req, res) => {
             }).then(r => res.status(200).json(r));
         }
     });
+});
 
+app.post('/addToDo', verifyToken, (req, res) => {
+    jwt.verify(req.token, 'secretkey', (err, authData) => {
+        if (err) {
+            res.sendStatus(403);
+        } else {
+            let userTodos = db.get(authData.user.email);
+            userTodos.insert({
+                todo: req.body.todo,
+                done: false
+            }).then(r => res.status(200).json(r));
+        }
+    });
+});
+
+app.post('/toggleDone', verifyToken, (req, res) => {
+    jwt.verify(req.token, 'secretkey', (err, authData) => {
+        if (err) {
+            res.sendStatus(403);
+        } else {
+            let userTodos = db.get(authData.user.email);
+            userTodos.update({
+                _id: req.body.id
+            }, {
+                $set: {
+                    done: req.body.done
+                }
+            }).then(d => res.status(200).json(d));
+        }
+    });
+});
+
+app.delete('/deleteTodo', verifyToken, (req, res) => {
+    jwt.verify(req.token, 'secretkey', (err, authData) => {
+        if (err) {
+            res.sendStatus(403);
+        } else {
+            let userTodos = db.get(authData.user.email);
+            userTodos.remove({
+                _id: req.body.id
+            }).then(d => res.status(200).json(d));
+        }
+    });
+});
+
+app.get('/toDoos', verifyToken, (req, res) => {
+    jwt.verify(req.token, 'secretkey', (err, authData) => {
+        if (err) {
+            res.sendStatus(403);
+        } else {
+            let userTodos = db.get(authData.user.email);
+            userTodos.find().then(d => res.status(200).json(d));
+        }
+    });
 });
 
 app.delete('/users', (req, res) => {
@@ -59,7 +113,7 @@ app.post('/login', (req, res) => {
     jwt.sign({
         user
     }, 'secretkey', {
-        expiresIn: '30s'
+        expiresIn: '30000s'
     }, (err, token) => {
         res.json({
             token

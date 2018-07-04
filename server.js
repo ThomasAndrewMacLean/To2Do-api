@@ -116,7 +116,7 @@ app.post('/users', verifyToken, (req, res) => {
     });
 });
 
-app.post('/addToDo', verifyToken, (req, res) => {
+app.post('/addtodo', verifyToken, (req, res) => {
     jwt.verify(req.token, 'secretkey', (err, authData) => {
         if (err) {
             res.sendStatus(403);
@@ -160,7 +160,7 @@ app.delete('/deleteTodo', verifyToken, (req, res) => {
     });
 });
 
-app.get('/toDoos', verifyToken, (req, res) => {
+app.get('/todoos', verifyToken, (req, res) => {
     jwt.verify(req.token, 'secretkey', (err, authData) => {
         if (err) {
             console.log(err);

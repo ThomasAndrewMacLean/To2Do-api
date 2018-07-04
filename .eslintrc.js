@@ -24,6 +24,11 @@ module.exports = {
             "error",
             "always"
         ],
-        "no-console": "off"
+        "no-console": "off",
+        "comma-dangle": ["error", "never"],
+        "object-property-newline": ["error", {
+            "multiline": true,
+            "minLongformProperties": 3
+        }]
     }
 };

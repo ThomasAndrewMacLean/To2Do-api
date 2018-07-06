@@ -22,7 +22,9 @@ app.use(bodyParser.urlencoded({
 }));
 
 let users = db.get('users');
-
+//app.delete('/drop', (req, res) => {
+//   db.get('thomas.maclean@marlon.be').remove(r => res.status(200).json(r))
+//})
 app.post('/signup', (req, res) => {
     const {
         password,
@@ -152,6 +154,8 @@ app.delete('/deleteTodo', verifyToken, (req, res) => {
         if (err) {
             res.sendStatus(403);
         } else {
+            console.log('deleting ' + JSON.stringify(req.body));
+            console.log('deleting ' + authData.user.email);
             let userTodos = db.get(authData.user.email);
             userTodos.remove({
                 _id: req.body.id

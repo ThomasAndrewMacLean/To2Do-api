@@ -2,6 +2,7 @@ if (process.env.NODE_ENV !== 'production') {
     require('dotenv').load();
 }
 
+const path = require('path');
 const express = require('express');
 var cookieParser = require('cookie-parser');
 const morgan = require('morgan');
@@ -115,8 +116,12 @@ app.get('/confirm/:encryption', (req, res) => {
         $set: {
             confirmed: true
         }
-    }).then(d => res.status(200).json(d)).catch(err => res.status(403).json(err));
-    // res.status(200).json(crypto.encrypt(encryption));
+    }).then(() => {
+        const page = process.env.NODE_ENV === 'production' ?
+            '/Pages/index.html' : '/Pages/index-dev.html';
+        res.sendFile(path.join(__dirname + page));
+    })
+        .catch(err => res.status(403).json(err));
 });
 
 app.get('/users', (req, res) => {

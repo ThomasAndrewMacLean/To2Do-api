@@ -1,8 +1,6 @@
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').load();
 }
-
-const path = require('path');
 const express = require('express');
 var cookieParser = require('cookie-parser');
 const morgan = require('morgan');
@@ -22,6 +20,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+app.set('view engine', 'ejs');
 
 const OAuth2Client = require('google-auth-library').OAuth2Client;
 const CLIENT_ID = '171417293160-02sar26733jopm7hvfb6e5cgk4mq21d7.apps.googleusercontent.com';
@@ -118,10 +117,9 @@ app.get('/confirm/:encryption', (req, res) => {
         }
     }).then(() => {
         const page = process.env.NODE_ENV === 'production' ?
-            '/Pages/index.html' : '/Pages/index-dev.html';
-        res.sendFile(path.join(__dirname + page));
-    })
-        .catch(err => res.status(403).json(err));
+            'index' : 'index-dev';
+        res.render(page);
+    }).catch(err => res.status(403).json(err));
 });
 
 app.get('/users', (req, res) => {

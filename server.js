@@ -83,7 +83,7 @@ app.post('/login', (req, res) => {
                 jwt.sign({
                     user
                 }, process.env.JWT_SECRET, {
-                    expiresIn: '10s'
+                    expiresIn: '3000s'
                 }, (err, token) => {
                     res.status(200).json({
                         token
@@ -103,15 +103,40 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/users', (req, res) => {
-    users.find().then(d => res.status(200).json(d));
+    if (req.admin) {
+        users.find().then(d => res.status(200).json(d));
+    } else {
+        res.status(403)
+    }
+});
+app.post('/todoForUser', (req, res) => {
+    if (req.admin) {
+        const email = req.body.email;
+        let userTodos = db.get(email).find().then(d => res.status(200).json(d));
+    } else {
+        res.status(403)
+    }
 });
 
-app.post('/users', getUserEmailFromToken, (req, res) => {
-    users.insert({
-        authData,
-        email: req.body.user
-    }).then(r => res.status(200).json(r));
+app.delete('/users', getUserEmailFromToken, (req, res) => {
+    const email = req.body.email;
+    if (req.admin) {
+        users.remove({
+            email: email
+        }).then(r => {
+            let userTodos = db.get(email);
+            userTodos.remove({}).then(d => res.status(200).json(d));
+        });
+    } else {
+        res.status(403)
+    }
 });
+// app.post('/users', getUserEmailFromToken, (req, res) => {
+//     users.insert({
+//         authData,
+//         email: req.body.user
+//     }).then(r => res.status(200).json(r));
+// });
 
 app.post('/addtodo', getUserEmailFromToken, (req, res) => {
     let userTodos = db.get(req.token);
@@ -144,21 +169,17 @@ app.get('/todoos', getUserEmailFromToken, (req, res) => {
     userTodos.find().then(d => res.status(200).json(d));
 });
 
-app.delete('/users', (req, res) => {
-    users.remove({
-        email: req.body.email
-    }).then(r => res.status(200).json(r));
-});
 
-app.get('/test', (req, res) => {
+
+app.get('/ping', (req, res) => {
     res.status(200).json({
-        'message': 'hello world!'
+        'message': 'pong'
     });
 });
 
 app.get('*/*', (req, res) => {
     res.status(200).json({
-        'message': '!!!'
+        'message': 'path not found...'
     });
 });
 

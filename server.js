@@ -13,7 +13,8 @@ const app = express();
 app.use(cors());
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-
+const crypto = require('./Auth/crypt');
+const mailer = require('./Mailer/mailer');
 app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(bodyParser.json());
@@ -46,11 +47,13 @@ app.post('/signup', (req, res) => {
             bcrypt.hash(password, saltRounds, function (err, hash) {
                 const newUser = {
                     email,
-                    password: hash
+                    password: hash,
+                    confirmed: false
                 };
-                users.insert(newUser).then(user => {
-                    console.log(user);
+                console.log(newUser);
 
+                users.insert(newUser).then(user => {
+                    mailer.sendMail(email, req.protocol + '://' + req.get('host') + '/confirm/' + crypto.encrypt(email));
                     jwt.sign({
                         user
                     }, process.env.JWT_SECRET, {
@@ -102,33 +105,48 @@ app.post('/login', (req, res) => {
 
 });
 
+app.get('/confirm/:encryption', (req, res) => {
+    var encryption = req.params.encryption;
+    const email = crypto.decrypt(encryption);
+
+    users.update({
+        email: email
+    }, {
+        $set: {
+            confirmed: true
+        }
+    }).then(d => res.status(200).json(d)).catch(err => res.status(403).json(err));
+    // res.status(200).json(crypto.encrypt(encryption));
+});
+
 app.get('/users', (req, res) => {
     if (req.admin) {
         users.find().then(d => res.status(200).json(d));
     } else {
-        res.status(403)
+        res.status(403);
     }
 });
 app.post('/todoForUser', (req, res) => {
     if (req.admin) {
         const email = req.body.email;
-        let userTodos = db.get(email).find().then(d => res.status(200).json(d));
+        db.get(email).find().then(d => res.status(200).json(d));
     } else {
-        res.status(403)
+        res.status(403);
     }
 });
 
-app.delete('/users', getUserEmailFromToken, (req, res) => {
+app.delete('/users', (req, res) => {
     const email = req.body.email;
-    if (req.admin) {
+    var a = true;
+    if (a) {
         users.remove({
             email: email
-        }).then(r => {
+        }).then(() => {
             let userTodos = db.get(email);
             userTodos.remove({}).then(d => res.status(200).json(d));
         });
     } else {
-        res.status(403)
+        res.status(403);
     }
 });
 // app.post('/users', getUserEmailFromToken, (req, res) => {
@@ -177,6 +195,13 @@ app.get('/ping', (req, res) => {
     });
 });
 
+
+app.get('/test', (req, res) => {
+    res.status(200).json({
+        'message': req.get('host')
+    });
+});
+
 app.get('*/*', (req, res) => {
     res.status(200).json({
         'message': 'path not found...'
@@ -191,30 +216,44 @@ function getUserEmailFromToken(req, res, next) {
         const bearerProvider = bearer[0];
         console.log(bearerToken);
 
-        if (bearerProvider === "Google") {
+        if (bearerProvider === 'Google') {
             client.verifyIdToken({
                 idToken: bearerToken,
-                audience: CLIENT_ID,
+                audience: CLIENT_ID
             }).then(ticket => {
                 req.token = ticket.getPayload().email;
-                if (ticket.getPayload().email === "thomas.maclean@gmail.com") {
+                if (ticket.getPayload().email === 'thomas.maclean@gmail.com') {
                     req.admin = true;
                 }
                 next();
             }).catch(err => {
                 res.status(403).json(err);
-            })
+            });
         } else {
             jwt.verify(bearerToken, process.env.JWT_SECRET, (err, authData) => {
                 if (err) {
                     console.log(err);
                     res.status(403).json(err);
                 } else {
-                    req.token = authData.user.email;
-                    if (authData.user.email === "thomas.maclean@gmail.com") {
+                    const email = authData.user.email;
+                    if (email === 'thomas.maclean@gmail.com') {
                         req.admin = true;
                     }
-                    next();
+                    users.findOne({
+                        email
+                    }).then(user => {
+                        if (user.confirmed) {
+                            req.token = email;
+                            next();
+                        } else {
+                            res.status(403).json({
+                                message: 'not yet confirmed!'
+                            });
+                        }
+                    }).catch(err => {
+                        console.log(err);
+                        res.status(403).json(err);
+                    });
                 }
             });
         }

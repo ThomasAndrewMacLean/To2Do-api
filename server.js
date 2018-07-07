@@ -10,16 +10,20 @@ const jwt = require('jsonwebtoken');
 const db = require('monk')(`mongodb://dbreadwrite:${process.env.MONGO_PW}@ds018708.mlab.com:18708/to2so`);
 const cors = require('cors');
 const app = express();
+app.use(cors());
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
-app.use(cors());
 app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+
+const OAuth2Client = require('google-auth-library').OAuth2Client;
+const CLIENT_ID = '171417293160-02sar26733jopm7hvfb6e5cgk4mq21d7.apps.googleusercontent.com';
+const client = new OAuth2Client(CLIENT_ID);
 
 let users = db.get('users');
 //app.delete('/drop', (req, res) => {
@@ -31,7 +35,6 @@ app.post('/signup', (req, res) => {
         email
     } = req.body;
 
-    //TODO: check if email exists
     users.findOne({
         email
     }).then(user => {
@@ -50,7 +53,7 @@ app.post('/signup', (req, res) => {
 
                     jwt.sign({
                         user
-                    }, 'secretkey', {
+                    }, process.env.JWT_SECRET, {
                         expiresIn: '300s'
                     }, (err, token) => {
                         res.status(200).json({
@@ -79,8 +82,8 @@ app.post('/login', (req, res) => {
             if (resp) {
                 jwt.sign({
                     user
-                }, 'secretkey', {
-                    expiresIn: '30000s'
+                }, process.env.JWT_SECRET, {
+                    expiresIn: '10s'
                 }, (err, token) => {
                     res.status(200).json({
                         token
@@ -100,81 +103,45 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/users', (req, res) => {
-    console.log(req);
-
     users.find().then(d => res.status(200).json(d));
 });
 
-app.post('/users', verifyToken, (req, res) => {
-    jwt.verify(req.token, 'secretkey', (err, authData) => {
-        if (err) {
-            res.sendStatus(403);
-        } else {
-            users.insert({
-                authData,
-                email: req.body.user
-            }).then(r => res.status(200).json(r));
-        }
-    });
+app.post('/users', getUserEmailFromToken, (req, res) => {
+    users.insert({
+        authData,
+        email: req.body.user
+    }).then(r => res.status(200).json(r));
 });
 
-app.post('/addtodo', verifyToken, (req, res) => {
-    jwt.verify(req.token, 'secretkey', (err, authData) => {
-        if (err) {
-            res.sendStatus(403);
-        } else {
-            let userTodos = db.get(authData.user.email);
-            userTodos.insert({
-                todo: req.body.todo,
-                done: false
-            }).then(r => res.status(200).json(r));
-        }
-    });
+app.post('/addtodo', getUserEmailFromToken, (req, res) => {
+    let userTodos = db.get(req.token);
+    userTodos.insert({
+        todo: req.body.todo,
+        done: false
+    }).then(r => res.status(200).json(r));
 });
 
-app.post('/toggleDone', verifyToken, (req, res) => {
-    jwt.verify(req.token, 'secretkey', (err, authData) => {
-        if (err) {
-            res.sendStatus(403);
-        } else {
-            let userTodos = db.get(authData.user.email);
-            userTodos.update({
-                _id: req.body.id
-            }, {
-                $set: {
-                    done: req.body.done
-                }
-            }).then(d => res.status(200).json(d));
+app.post('/toggleDone', getUserEmailFromToken, (req, res) => {
+    let userTodos = db.get(req.token);
+    userTodos.update({
+        _id: req.body.id
+    }, {
+        $set: {
+            done: req.body.done
         }
-    });
+    }).then(d => res.status(200).json(d));
 });
 
-app.delete('/deleteTodo', verifyToken, (req, res) => {
-    jwt.verify(req.token, 'secretkey', (err, authData) => {
-        if (err) {
-            res.sendStatus(403);
-        } else {
-            console.log('deleting ' + JSON.stringify(req.body));
-            console.log('deleting ' + authData.user.email);
-            let userTodos = db.get(authData.user.email);
-            userTodos.remove({
-                _id: req.body.id
-            }).then(d => res.status(200).json(d));
-        }
-    });
+app.delete('/deleteTodo', getUserEmailFromToken, (req, res) => {
+    let userTodos = db.get(req.token);
+    userTodos.remove({
+        _id: req.body.id
+    }).then(d => res.status(200).json(d));
 });
 
-app.get('/todoos', verifyToken, (req, res) => {
-    jwt.verify(req.token, 'secretkey', (err, authData) => {
-        if (err) {
-            console.log(err);
-
-            res.status(403).json(err);
-        } else {
-            let userTodos = db.get(authData.user.email);
-            userTodos.find().then(d => res.status(200).json(d));
-        }
-    });
+app.get('/todoos', getUserEmailFromToken, (req, res) => {
+    let userTodos = db.get(req.token);
+    userTodos.find().then(d => res.status(200).json(d));
 });
 
 app.delete('/users', (req, res) => {
@@ -195,13 +162,39 @@ app.get('*/*', (req, res) => {
     });
 });
 
-function verifyToken(req, res, next) {
+function getUserEmailFromToken(req, res, next) {
     const bearerHeader = req.headers['authorization'];
     if (typeof bearerHeader !== 'undefined') {
         const bearer = bearerHeader.split(' ');
         const bearerToken = bearer[1];
-        req.token = bearerToken;
-        next();
+        const bearerProvider = bearer[0];
+        if (bearerProvider === "Google") {
+            client.verifyIdToken({
+                idToken: bearerToken,
+                audience: CLIENT_ID,
+            }).then(ticket => {
+                req.token = ticket.getPayload().email;
+                if (ticket.getPayload().email === "thomas.maclean@gmail.com") {
+                    req.admin = true;
+                }
+                next();
+            }).catch(err => {
+                res.status(403).json(err);
+            })
+        } else {
+            jwt.verify(bearerToken, process.env.JWT_SECRET, (err, authData) => {
+                if (err) {
+                    console.log(err);
+                    res.status(403).json(err);
+                } else {
+                    req.token = authData.user.email;
+                    if (authData.user.email === "thomas.maclean@gmail.com") {
+                        req.admin = true;
+                    }
+                    next();
+                }
+            });
+        }
     } else {
         res.sendStatus(403);
     }

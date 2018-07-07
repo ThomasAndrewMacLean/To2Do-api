@@ -189,6 +189,8 @@ function getUserEmailFromToken(req, res, next) {
         const bearer = bearerHeader.split(' ');
         const bearerToken = bearer[1];
         const bearerProvider = bearer[0];
+        console.log(bearerToken);
+
         if (bearerProvider === "Google") {
             client.verifyIdToken({
                 idToken: bearerToken,

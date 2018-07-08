@@ -16,7 +16,7 @@ const mailOptions = {
 };
 module.exports = {
     sendMail: (mail, linky) => {
-        mailOptions.html += linky;
+        mailOptions.html = linky;
         mailOptions.to = mail;
         console.log('sending mail ✉️');
 

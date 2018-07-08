@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 const mailOptions = {
-    from: 'noreply', // sender address
+    from: 'noreply', // sender address??
     to: 'thomas.maclean@gmail.com', // list of receivers
     subject: 'Subject of your email', // Subject line
     html: '<p>Your html here test</p>' // plain text body

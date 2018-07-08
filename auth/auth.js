@@ -3,7 +3,7 @@ const CLIENT_ID = '171417293160-02sar26733jopm7hvfb6e5cgk4mq21d7.apps.googleuser
 const client = new OAuth2Client(CLIENT_ID);
 const jwt = require('jsonwebtoken');
 const db = require('monk')(`mongodb://dbreadwrite:${process.env.MONGO_PW}@ds018708.mlab.com:18708/to2so`);
-let users = db.get('users');
+let users = db.get('users'); //k
 
 
 
@@ -52,7 +52,7 @@ module.exports = function getUserEmailFromToken(req, res, next) {
                 }).then(user => {
                     if (user.confirmed) {
                         console.log('USER IS CONFIRMED');
-                        
+
                         req.token = email;
                         next();
                     } else {

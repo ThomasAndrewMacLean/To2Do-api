@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const algorithm = 'aes-256-ctr';
-const password =  process.env.CRYPTO;
+const password = process.env.CRYPTO;
 
 module.exports = {
     encrypt: (text) => {
@@ -8,6 +8,7 @@ module.exports = {
         var crypted = cipher.update(text, 'utf8', 'hex');
         crypted += cipher.final('hex');
         return crypted;
+
     },
     decrypt: (text) => {
         var decipher = crypto.createDecipher(algorithm, password);

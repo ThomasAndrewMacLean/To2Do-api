@@ -245,6 +245,7 @@ describe('app', () => {
                 .get('/todoos')
                 .set('Authorization', 'bearer blabla')
                 .end((err, res) => {
+                    expect(res.body).toHaveLength(0);
                     expect(res.status).toBe(200);
                     if (err) throw done(err);
                     done();
@@ -265,5 +266,42 @@ describe('app', () => {
                 });
         });
 
+        it('new user gets his todoos d', (done) => {
+            request(app)
+                .get('/todoos')
+                .set('Authorization', 'bearer blabla')
+                .end((err, res) => {
+                    expect(res.body).toHaveLength(1);
+                    expect(res.status).toBe(200);
+                    if (err) throw done(err);
+                    done();
+                });
+        });
+
+        it('new user posts a second todo after confirming', (done) => {
+            request(app)
+                .post('/addtodo')
+                .set('Authorization', 'bearer blabla')
+
+                .set('Content-Type', 'application/json')
+                .send('{"todo":"todoo2"}')
+                .end((err, res) => {
+                    expect(res.status).toBe(200);
+                    if (err) throw done(err);
+                    done();
+                });
+        });
+
+        it('new user gets his todoos after 2 posts', (done) => {
+            request(app)
+                .get('/todoos')
+                .set('Authorization', 'bearer blabla')
+                .end((err, res) => {
+                    expect(res.body).toHaveLength(2);
+                    expect(res.status).toBe(200);
+                    if (err) throw done(err);
+                    done();
+                });
+        });
     });
 });

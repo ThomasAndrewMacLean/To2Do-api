@@ -75,7 +75,7 @@ const sendMail = (mail, linky) => {
         else
             console.log(info);
     });
-}
+};
 
 let users = db.get('users');
 //app.delete('/drop', (req, res) => {

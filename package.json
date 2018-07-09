@@ -2,9 +2,9 @@
   "name": "to2do-api",
   "version": "1.0.0",
   "description": "backend for todo app",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node app.js",
     "dev": "nodemon server.js",
     "test": "jest"
   },

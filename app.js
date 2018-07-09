@@ -20,8 +20,8 @@ app.use(cors());
 
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-const crypto = require('./auth/crypt');
-const mailer = require('./mailer/mailer');
+//const crypto = require('./auth/crypt');
+//const mailer = require('./mailer/mailer');
 app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(bodyParser.json());
@@ -29,6 +29,53 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.set('view engine', 'ejs');
+
+const crypto = require('crypto');
+const algorithm = 'aes-256-ctr';
+const password = process.env.CRYPTO;
+const encrypt = (text) => {
+    var cipher = crypto.createCipher(algorithm, password);
+    var crypted = cipher.update(text, 'utf8', 'hex');
+    crypted += cipher.final('hex');
+    return crypted;
+
+};
+const decrypt = (text) => {
+    var decipher = crypto.createDecipher(algorithm, password);
+    var dec = decipher.update(text, 'hex', 'utf8');
+    dec += decipher.final('utf8');
+    return dec;
+};
+
+const nodemailer = require('nodemailer');
+
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'thomas.maclean.mailer@gmail.com',
+        pass: 'eynk2g>v'
+    }
+});
+const mailOptions = {
+    from: 'noreply', // sender address??
+    to: 'thomas.maclean@gmail.com', // list of receivers
+    subject: 'Subject of your email', // Subject line
+    html: '<p>Your html here test</p>' // plain text body
+};
+
+const sendMail = (mail, linky) => {
+    mailOptions.html = linky;
+    mailOptions.to = mail;
+    console.log('sending mail ✉️');
+
+    transporter.sendMail(mailOptions, function (err, info) {
+        if (err)
+            console.log(err);
+        else
+            console.log(info);
+    });
+}
 
 let users = db.get('users');
 //app.delete('/drop', (req, res) => {
@@ -57,7 +104,7 @@ app.post('/signup', (req, res) => {
                 console.log(newUser);
 
                 users.insert(newUser).then(user => {
-                    mailer.sendMail(email, req.protocol + '://' + req.get('host') + '/confirm/' + crypto.encrypt(email));
+                    sendMail(email, req.protocol + '://' + req.get('host') + '/confirm/' + encrypt(email));
                     jwt.sign({
                         user
                     }, process.env.JWT_SECRET, {
@@ -111,7 +158,7 @@ app.post('/login', (req, res) => {
 
 app.get('/confirm/:encryption', (req, res) => {
     var encryption = req.params.encryption;
-    const email = crypto.decrypt(encryption);
+    const email = decrypt(encryption);
 
     users.update({
         email: email
@@ -286,4 +333,5 @@ function getUserEmailFromToken(req, res, next) {
     }
 }
 
-module.exports = app;
+app.listen(process.env.PORT || 5001, () => console.log('All is ok, sit back and relax!'));
+//module.exports = app;

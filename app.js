@@ -48,14 +48,6 @@ const decrypt = (text) => {
     return dec;
 };
 
-const nodemailer = require('nodemailer');
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'thomas.maclean.mailer@gmail.com',
-        pass: 'eynk2g>v'
-    }
-});
 const mailOptions = {
     from: 'noreply', // sender address??
     to: 'thomas.maclean@gmail.com', // list of receivers
@@ -63,30 +55,36 @@ const mailOptions = {
     html: '<p>Your html here test</p>' // plain text body
 };
 let fs = require('fs');
-//('./to2doSignUpMail/mail.html');
+const fetch = require('node-fetch');
 
 const sendMail = (mail, linky) => {
     console.log('start mail');
-    //let data = '{{{link}}}';
     let data = fs.readFileSync('./public/mail.html', 'utf8');
-    //console.log(data);
+    console.log(data);
     mailOptions.html = data.replace('{{{link}}}', linky);
     mailOptions.to = mail;
+
+    //https://p0dmber89l.execute-api.eu-west-1.amazonaws.com/dev
+
     console.log('sending mail ✉️');
 
-    transporter.sendMail(mailOptions, function (err, info) {
-        if (err)
-            console.log(err);
-        else
-            console.log(info);
-    });
-
+    var body = {
+        mailBody: mailOptions.html,
+        mail
+    };
+    fetch('https://p0dmber89l.execute-api.eu-west-1.amazonaws.com/dev/mail', {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(res => res.json())
+        .then(json => console.log(json));
 };
 
 let users = db.get('users');
-//app.delete('/drop', (req, res) => {
-//   db.get('thomas.maclean@marlon.be').remove(r => res.status(200).json(r))
-//})
+
 app.post('/signup', (req, res) => {
     const {
         password,
@@ -180,14 +178,32 @@ app.get('/confirm/:encryption', (req, res) => {
     }).catch(err => res.status(403).json(err));
 });
 
-app.get('/users', (req, res) => {
+app.get('/allusers', getUserEmailFromToken, (req, res) => {
     if (req.admin) {
-        users.find().then(d => res.status(200).json(d));
+        users.find().then(d => {
+
+            res.status(200).json(d.map(u => {
+                return {
+                    email: u.email,
+                    id: u._id,
+                    confirmed: u.confirmed,
+                    todoos: [],
+                    created: new Date(parseInt(u._id.toString().substring(0, 8), 16) * 1000)
+                };
+            }));
+        });
     } else {
         res.status(403);
     }
 });
-app.post('/todoForUser', (req, res) => {
+
+app.get('/isadmin', getUserEmailFromToken, (req, res) => {
+    res.status(200).json({
+        admin: req.admin
+    });
+});
+
+app.post('/todoForUser', getUserEmailFromToken, (req, res) => {
     if (req.admin) {
         const email = req.body.email;
         db.get(email).find().then(d => res.status(200).json(d));
@@ -196,10 +212,9 @@ app.post('/todoForUser', (req, res) => {
     }
 });
 
-app.delete('/users', (req, res) => {
+app.delete('/users', getUserEmailFromToken, (req, res) => {
     const email = req.body.email;
-    var a = true;
-    if (a) {
+    if (req.admin) {
         users.remove({
             email: email
         }).then(() => {

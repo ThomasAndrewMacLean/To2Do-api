@@ -8,7 +8,7 @@
 
   </mj-head>
 
-  <mj-body background-color="#eaffd0">
+  <mj-body background-color="#fff">
 
     <mj-include path="./header.mjml" />
 
@@ -18,7 +18,7 @@
         <mj-text align="left">
           <h2>Thanks for signing up!</h2>
           You are almost there.
-          <br/> Click on the following link to verify your email address:
+          <br/> Click on the following link to verify your email address: {{{link}}}
           <br/> <br/>
           <br/>
           <br/> Have a nice day,

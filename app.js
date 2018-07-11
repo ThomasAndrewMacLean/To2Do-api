@@ -62,14 +62,14 @@ const mailOptions = {
     subject: 'Subject of your email', // Subject line
     html: '<p>Your html here test</p>' // plain text body
 };
-// let fs = require('fs');
+let fs = require('fs');
 //('./to2doSignUpMail/mail.html');
 
 const sendMail = (mail, linky) => {
     console.log('start mail');
-    let data = '{{{link}}}';
-    //let data = fs.readFileSync('./public/mail.html', 'utf8');
-    console.log(data);
+    //let data = '{{{link}}}';
+    let data = fs.readFileSync('./public/mail.html', 'utf8');
+    //console.log(data);
     mailOptions.html = data.replace('{{{link}}}', linky);
     mailOptions.to = mail;
     console.log('sending mail ✉️');
@@ -92,6 +92,7 @@ app.post('/signup', (req, res) => {
         password,
         email
     } = req.body;
+    console.log(email + ' start signup');
 
     users.findOne({
         email
@@ -339,5 +340,5 @@ function getUserEmailFromToken(req, res, next) {
     }
 }
 
-//app.listen(process.env.PORT || 5001, () => console.log('All is ok, sit back and relax!'));
-module.exports = app;
+app.listen(process.env.PORT || 5001, () => console.log('All is ok, sit back and relax!'));
+//module.exports = app;

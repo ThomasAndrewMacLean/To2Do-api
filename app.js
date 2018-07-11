@@ -69,7 +69,7 @@ let fs = require('fs');
 const sendMail = (mail, linky) => {
     console.log('start mail');
 
-    let data = fs.readFileSync('./to2doSignUpMail/mail.html', 'utf8');
+    let data = fs.readFileSync('./views/mail.html', 'utf8');
     console.log(data);
     mailOptions.html = data.replace('{{{link}}}', linky);
     mailOptions.to = mail;

@@ -17,7 +17,6 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors());
-app.use(express.static('public'));
 
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -30,6 +29,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.set('view engine', 'ejs');
+app.use(express.static('public'));
 
 const crypto = require('crypto');
 const algorithm = 'aes-256-ctr';
@@ -49,8 +49,6 @@ const decrypt = (text) => {
 };
 
 const nodemailer = require('nodemailer');
-
-
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {

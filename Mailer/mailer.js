@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-
+let htmlMail = require('./../to2doSignUpMail/mail.html');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -16,7 +16,7 @@ const mailOptions = {
 };
 module.exports = {
     sendMail: (mail, linky) => {
-        mailOptions.html = linky;
+        mailOptions.html = htmlMail.replace('{{{link}}}', linky);
         mailOptions.to = mail;
         console.log('sending mail ✉️');
 

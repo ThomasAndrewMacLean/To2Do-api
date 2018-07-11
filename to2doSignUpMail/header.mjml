@@ -1,0 +1,9 @@
+<mj-section background-color="#f38181">
+
+  <mj-column>
+    <mj-text font-size="2rem" font-weight="100" font-family="'Avenir', Helvetica, Arial, sans-serif;"	align="left" color="#fff">
+      To2do
+    </mj-text>
+  </mj-column>
+
+</mj-section>

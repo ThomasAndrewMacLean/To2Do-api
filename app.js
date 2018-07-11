@@ -63,9 +63,15 @@ const mailOptions = {
     subject: 'Subject of your email', // Subject line
     html: '<p>Your html here test</p>' // plain text body
 };
+let fs = require('fs');
+//('./to2doSignUpMail/mail.html');
 
 const sendMail = (mail, linky) => {
-    mailOptions.html = linky;
+    console.log('start mail');
+
+    let data = fs.readFileSync('./to2doSignUpMail/mail.html', 'utf8');
+    console.log(data);
+    mailOptions.html = data.replace('{{{link}}}', linky);
     mailOptions.to = mail;
     console.log('sending mail ✉️');
 
@@ -75,6 +81,7 @@ const sendMail = (mail, linky) => {
         else
             console.log(info);
     });
+
 };
 
 let users = db.get('users');
@@ -333,5 +340,5 @@ function getUserEmailFromToken(req, res, next) {
     }
 }
 
-app.listen(process.env.PORT || 5001, () => console.log('All is ok, sit back and relax!'));
-//module.exports = app;
+//app.listen(process.env.PORT || 5001, () => console.log('All is ok, sit back and relax!'));
+module.exports = app;

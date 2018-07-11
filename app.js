@@ -17,6 +17,7 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors());
+app.use(express.static('public'));
 
 const bcrypt = require('bcrypt');
 const saltRounds = 10;

@@ -22,6 +22,7 @@
     },
     "homepage": "https://github.com/ThomasAndrewMacLean/To2Do-api#readme",
     "dependencies": {
+        "babel-core": "^6.26.3",
         "babel-plugin-external-helpers": "^6.22.0",
         "babelrc-rollup": "^3.0.0",
         "bcrypt": "^2.0.1",

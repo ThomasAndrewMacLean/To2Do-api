@@ -38,6 +38,7 @@
         "jsonwebtoken": "^8.3.0",
         "monk": "^6.0.6",
         "node-fetch": "^2.1.2",
+        "rimraf": "^2.6.2",
         "rollup": "^0.62.0",
         "rollup-plugin-babel": "^3.0.7",
         "volleyball": "^1.5.1"

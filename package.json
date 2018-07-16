@@ -5,10 +5,11 @@
     "main": "app.js",
     "scripts": {
         "prestart": "npm run -s build",
-        "start": "node dist/index.js",
-        "dev": "nodemon src/index.js --exec \"node -r dotenv/config -r babel-register\"",
+        "start": "node dist/server_production.js",
+        "dev": "nodemon src/server.js --exec \"node -r dotenv/config -r babel-register\"",
         "clean": "rm -rf dist",
-        "build": "npm run clean && mkdir -p dist && babel src -s -D -d dist"
+        "build": "npm run clean && mkdir -p dist && npm run rollup",
+        "rollup": "./node_modules/.bin/rollup -c"
     },
     "repository": {
         "type": "git",
@@ -21,6 +22,8 @@
     },
     "homepage": "https://github.com/ThomasAndrewMacLean/To2Do-api#readme",
     "dependencies": {
+        "babel-plugin-external-helpers": "^6.22.0",
+        "babelrc-rollup": "^3.0.0",
         "bcrypt": "^2.0.1",
         "body-parser": "^1.18.3",
         "cookie-parser": "^1.4.3",
@@ -34,6 +37,8 @@
         "jsonwebtoken": "^8.3.0",
         "monk": "^6.0.6",
         "node-fetch": "^2.1.2",
+        "rollup": "^0.62.0",
+        "rollup-plugin-babel": "^3.0.7",
         "volleyball": "^1.5.1"
     },
     "devDependencies": {

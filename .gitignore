@@ -4,3 +4,4 @@ secret.txt
 .DS_Store
 yarn-debug.log*
 yarn-error.log*
+.cache

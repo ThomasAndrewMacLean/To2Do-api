@@ -9,6 +9,6 @@ export default {
     entry: 'src/server.js',
     dest: 'dist/server_production.js',
     plugins: [
-        babel(babelrc())
+       // babel(babelrc())
     ]
 };

@@ -1,14 +1,16 @@
 import babel from 'rollup-plugin-babel';
-import babelrc from 'babelrc-rollup';
+//import babelrc from 'babelrc-rollup';
 
 export default {
     output: {
         file: 'dist/server_production.js',
         format: 'cjs'
     },
-    entry: 'src/server.js',
-    dest: 'dist/server_production.js',
+    input: 'src/server.js',
+    sourcemap: true,
     plugins: [
-       // babel(babelrc())
+        babel({
+            exclude: 'node_modules/**' // only transpile our source code
+        })
     ]
 };

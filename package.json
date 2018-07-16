@@ -24,6 +24,7 @@
     "dependencies": {
         "babel-core": "^6.26.3",
         "babel-plugin-external-helpers": "^6.22.0",
+        "babel-preset-es2015-rollup": "^3.0.0",
         "babelrc-rollup": "^3.0.0",
         "bcrypt": "^2.0.1",
         "body-parser": "^1.18.3",

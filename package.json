@@ -7,7 +7,7 @@
         "prestart": "npm run -s build",
         "start": "node dist/server_production.js",
         "dev": "nodemon src/server.js --exec \"node -r dotenv/config -r babel-register\"",
-        "clean": "rm -rf dist",
+        "clean": "rimraf dist",
         "build": "npm run clean && mkdir -p dist && npm run rollup",
         "rollup": "./node_modules/.bin/rollup -c"
     },

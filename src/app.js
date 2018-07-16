@@ -3,7 +3,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 const express = require('express');
 var cookieParser = require('cookie-parser');
-const morgan = require('morgan');
+const logger = require('volleyball');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const OAuth2Client = require('google-auth-library').OAuth2Client;
@@ -23,7 +23,7 @@ const saltRounds = 10;
 //const crypto = require('./auth/crypt');
 //const mailer = require('./mailer/mailer');
 app.use(cookieParser());
-app.use(morgan('dev'));
+app.use(logger);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
@@ -58,14 +58,9 @@ let fs = require('fs');
 const fetch = require('node-fetch');
 
 const sendMail = (mail, linky) => {
-    console.log('start mail');
     let data = fs.readFileSync('./public/mail.html', 'utf8');
-    console.log(data);
     mailOptions.html = data.replace('{{{link}}}', linky);
     mailOptions.to = mail;
-
-    //https://p0dmber89l.execute-api.eu-west-1.amazonaws.com/dev
-
     console.log('sending mail ✉️');
 
     var body = {
@@ -212,7 +207,7 @@ app.post('/todoForUser', getUserEmailFromToken, (req, res) => {
     }
 });
 
-app.delete('/users', getUserEmailFromToken, (req, res) => {
+app.delete('/deleteUser', getUserEmailFromToken, (req, res) => {
     const email = req.body.email;
     if (req.admin) {
         users.remove({
@@ -259,12 +254,8 @@ app.delete('/deleteTodo', getUserEmailFromToken, (req, res) => {
 });
 
 app.get('/todoos', getUserEmailFromToken, (req, res) => {
-    console.log('start');
-    // console.log(req);
-
     let userTodos = db.get(req.token);
     userTodos.find().then(d => {
-        console.log(d);
         res.status(200).json(d);
     });
 });
@@ -282,18 +273,13 @@ app.get('*/*', (req, res) => {
 });
 
 function getUserEmailFromToken(req, res, next) {
-
-    console.log(process.env.NODE_ENV);
-
-
     const bearerHeader = req.headers['authorization'];
     // check blacklisted
-    
+
     if (typeof bearerHeader !== 'undefined') {
         const bearer = bearerHeader.split(' ');
         const bearerToken = bearer[1];
         const bearerProvider = bearer[0];
-        console.log(bearerToken);
 
         if (bearerProvider === 'Google') {
             client.verifyIdToken({
@@ -315,12 +301,10 @@ function getUserEmailFromToken(req, res, next) {
         } else {
             try {
                 let authData = jwt.verify(bearerToken, process.env.JWT_SECRET); //, (err, authData) => {
-
                 const email = authData.user.email;
-                console.log('EEEEemail');
-                console.log(email);
 
                 if (email === 'thomas.maclean@gmail.com') {
+                    console.log('USER IS ADMIN');
                     req.admin = true;
                 }
                 users.findOne({
@@ -332,7 +316,7 @@ function getUserEmailFromToken(req, res, next) {
                         req.token = email;
                         next();
                     } else {
-                        console.log('CONFIRMMMMM???');
+                        console.log('CONFIRM');
 
                         res.status(403).json({
                             message: 'not yet confirmed!'
@@ -352,10 +336,10 @@ function getUserEmailFromToken(req, res, next) {
         }
     } else {
         res.status(403).json({
-            err: 'no authorization token!'
+            err: 'no authorization token!!!'
         });
     }
 }
 
-app.listen(process.env.PORT || 5001, () => console.log('All is ok, sit back and relax!'));
-//module.exports = app;
+//app.listen(process.env.PORT || 5001, () => console.log('All is ok, sit back and relax!'));
+export default app;

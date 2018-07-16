@@ -1,45 +1,51 @@
 {
-  "name": "to2do-api",
-  "version": "1.0.0",
-  "description": "backend for todo app",
-  "main": "app.js",
-  "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
-    "test": "jest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ThomasAndrewMacLean/To2Do-api.git"
-  },
-  "author": "Thomas MacLean",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ThomasAndrewMacLean/To2Do-api/issues"
-  },
-  "homepage": "https://github.com/ThomasAndrewMacLean/To2Do-api#readme",
-  "dependencies": {
-    "bcrypt": "^2.0.1",
-    "body-parser": "^1.18.3",
-    "cookie-parser": "^1.4.3",
-    "cors": "^2.8.4",
-    "crypto": "^1.0.1",
-    "dotenv": "^6.0.0",
-    "ejs": "^2.6.1",
-    "express": "^4.16.3",
-    "google-auth-library": "^1.6.1",
-    "joi": "^13.4.0",
-    "jsonwebtoken": "^8.3.0",
-    "monk": "^6.0.6",
-    "morgan": "^1.9.0",
-    "node-fetch": "^2.1.2"
-  },
-  "devDependencies": {
-    "eslint": "^5.0.1",
-    "eslint-plugin-jest": "^21.17.0",
-    "jest": "^23.3.0",
-    "nodemon": "^1.17.5",
-    "sinon": "^6.1.3",
-    "supertest": "^3.1.0"
-  }
+    "name": "to2do-api",
+    "version": "1.0.0",
+    "description": "backend for todo app",
+    "main": "app.js",
+    "scripts": {
+        "prestart": "npm run -s build",
+        "start": "node dist/index.js",
+        "dev": "nodemon src/index.js --exec \"node -r dotenv/config -r babel-register\"",
+        "clean": "rm -rf dist",
+        "build": "npm run clean && mkdir -p dist && babel src -s -D -d dist"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ThomasAndrewMacLean/To2Do-api.git"
+    },
+    "author": "Thomas MacLean",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/ThomasAndrewMacLean/To2Do-api/issues"
+    },
+    "homepage": "https://github.com/ThomasAndrewMacLean/To2Do-api#readme",
+    "dependencies": {
+        "bcrypt": "^2.0.1",
+        "body-parser": "^1.18.3",
+        "cookie-parser": "^1.4.3",
+        "cors": "^2.8.4",
+        "crypto": "^1.0.1",
+        "dotenv": "^6.0.0",
+        "ejs": "^2.6.1",
+        "express": "^4.16.3",
+        "google-auth-library": "^1.6.1",
+        "joi": "^13.4.0",
+        "jsonwebtoken": "^8.3.0",
+        "monk": "^6.0.6",
+        "node-fetch": "^2.1.2",
+        "volleyball": "^1.5.1"
+    },
+    "devDependencies": {
+        "babel-cli": "^6.26.0",
+        "babel-preset-es2015": "^6.24.1",
+        "babel-preset-stage-2": "^6.24.1",
+        "babel-register": "^6.26.0",
+        "eslint": "^5.0.1",
+        "eslint-plugin-jest": "^21.17.0",
+        "jest": "^23.3.0",
+        "nodemon": "^1.17.5",
+        "sinon": "^6.1.3",
+        "supertest": "^3.1.0"
+    }
 }

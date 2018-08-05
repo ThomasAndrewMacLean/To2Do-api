@@ -27,6 +27,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+const path = require('path');
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
@@ -142,6 +144,12 @@ app.get('/confirm/:encryption', (req, res) => {
         res.render(page);
     }).catch(err => res.status(403).json(err));
 });
+
+
+app.get('/test', (req, res) => {
+    res.render('test');
+});
+
 
 app.get('/allusers', getUserEmailFromToken, (req, res) => {
     if (req.admin) {

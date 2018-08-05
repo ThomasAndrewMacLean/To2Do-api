@@ -7,8 +7,9 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceFolder}/server.js"
+            "name": "Run tests",
+            "program": "${workspaceRoot}/node_modules/.bin/jest",
+            "sourceMaps": true
         }
     ]
 }

@@ -1,3 +1,16 @@
 {
-    "presets": ["es2015-rollup"]
+    "env": {
+        "production": {
+            "presets": ["es2015-rollup"]
+        },
+        "development": {
+            "presets": ["es2015-rollup"]
+        },
+        "test": {
+            "presets": ["env"],
+            "sourceMaps": "inline",
+            "retainLines": true
+        }
+    }
+
 }

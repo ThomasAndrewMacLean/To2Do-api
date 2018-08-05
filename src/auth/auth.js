@@ -1,13 +1,18 @@
+// if (process.env.NODE_ENV !== 'development') {
+//     require('dotenv').load();
+// }
 const OAuth2Client = require('google-auth-library').OAuth2Client;
 const CLIENT_ID = '171417293160-02sar26733jopm7hvfb6e5cgk4mq21d7.apps.googleusercontent.com';
 const client = new OAuth2Client(CLIENT_ID);
 const jwt = require('jsonwebtoken');
-const db = require('monk')(`mongodb://dbreadwrite:${process.env.MONGO_PW}@ds018708.mlab.com:18708/to2so`);
+const db = process.env.NODE_ENV === 'test' ?
+    require('./../../mocks/monkey')('mon@ds018848.mlab.com:18848/to2dotest') :
+    require('monk')(`mongodb://dbreadwrite:${process.env.MONGO_PW}@ds018708.mlab.com:18708/to2so`);
 let users = db.get('users'); //k
 
 
 
-module.exports = function getUserEmailFromToken(req, res, next) {
+export function getUserEmailFromToken(req, res, next) {
 
     console.log(process.env.NODE_ENV);
 
@@ -38,7 +43,9 @@ module.exports = function getUserEmailFromToken(req, res, next) {
             });
         } else {
             try {
+
                 let authData = jwt.verify(bearerToken, process.env.JWT_SECRET); //, (err, authData) => {
+                console.log(authData);
 
                 const email = authData.user.email;
                 console.log('EEEEemail');
@@ -79,4 +86,4 @@ module.exports = function getUserEmailFromToken(req, res, next) {
             err: 'no authorization token!'
         });
     }
-};
+}

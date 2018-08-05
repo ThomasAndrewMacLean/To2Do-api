@@ -27,8 +27,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-const path = require('path');
-app.set('views', path.join(__dirname, 'views'));
+//const path = require('path');
+app.set('views', './src/views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 

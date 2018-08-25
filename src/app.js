@@ -180,8 +180,9 @@ app.get('/test', (req, res) => {
     res.render('test');
 });
 
-app.get('/loginGoogle', getUserEmailFromToken, (req, res) => {
+app.post('/loginGoogle', getUserEmailFromToken, (req, res) => {
     const email = req.token;
+    const name = req.body.name;
     users
         .findOne({
             email
@@ -193,6 +194,7 @@ app.get('/loginGoogle', getUserEmailFromToken, (req, res) => {
                 const newUser = {
                     email,
                     confirmed: true,
+                    name,
                     google: true
                 };
                 console.log(newUser);
@@ -295,10 +297,16 @@ app.delete('/deleteTodo', getUserEmailFromToken, (req, res) => {
 });
 
 app.get('/todoos', getUserEmailFromToken, (req, res) => {
-    let userTodos = db.get(req.token);
-    userTodos.find().then(d => {
-        res.status(200).json({ todoos: d, user: req.token });
-    });
+    users
+        .findOne({
+            email: req.token
+        })
+        .then(findUser => {
+            let userTodos = db.get(req.token);
+            userTodos.find().then(d => {
+                res.status(200).json({ todoos: d, user: findUser.name || req.token });
+            });
+        });
 });
 
 app.get('*/*', (req, res) => {

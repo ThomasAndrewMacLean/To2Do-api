@@ -79,7 +79,7 @@ app.post('/signup', (req, res) => {
                     jwt.sign({
                         user
                     }, process.env.JWT_SECRET, {
-                        expiresIn: '300s'
+                        expiresIn: '300000s'
                     }, (err, token) => {
                         res.status(200).json({
                             token
@@ -103,12 +103,18 @@ app.post('/login', (req, res) => {
     users.findOne({
         email
     }).then(user => {
+        if(!user.password){
+            res.status(403).json({
+                message: 'social login?'
+            });
+        }
+
         bcrypt.compare(password, user.password, function (err, resp) {
             if (resp) {
                 jwt.sign({
                     user
                 }, process.env.JWT_SECRET, {
-                    expiresIn: '3000s'
+                    expiresIn: '3000000s'
                 }, (err, token) => {
                     res.status(200).json({
                         token
@@ -123,8 +129,6 @@ app.post('/login', (req, res) => {
     }).catch(() => res.status(403).json({
         message: 'wrong user'
     }));
-
-
 });
 
 app.get('/confirm/:encryption', (req, res) => {
@@ -150,7 +154,27 @@ app.get('/test', (req, res) => {
     res.render('test');
 });
 
+app.get('/loginGoogle', getUserEmailFromToken, (req, res) => {
+    const email = req.body.email;
+    users.findOne({
+        email
+    }).then(user => {
+        if(user){
+            console.log('allready a user');
+        }
+        else{
+            const newUser = {
+                email,
+                confirmed: true
+            };
+            console.log(newUser);
 
+            users.insert(newUser);
+        }
+    }).catch(err => {
+        res.status(403).json(err);
+    });
+});
 app.get('/allusers', getUserEmailFromToken, (req, res) => {
     if (req.admin) {
         users.find().then(d => {

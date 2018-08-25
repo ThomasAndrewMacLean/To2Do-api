@@ -297,7 +297,7 @@ app.delete('/deleteTodo', getUserEmailFromToken, (req, res) => {
 app.get('/todoos', getUserEmailFromToken, (req, res) => {
     let userTodos = db.get(req.token);
     userTodos.find().then(d => {
-        res.status(200).json(d);
+        res.status(200).json({ todoos: d, user: req.token });
     });
 });
 

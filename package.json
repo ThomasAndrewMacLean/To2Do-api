@@ -12,7 +12,8 @@
         "build": "npm run clean && mkdir -p dist && npm run rollup",
         "rollup": "./node_modules/.bin/rollup -c",
         "test": "jest",
-        "apidoc": "apidoc -i src/ && apidoc-markdown2 -p doc/ -o README.md rimraf doc"
+        "apidoc": "apidoc -i src/ && apidoc-markdown2 -p doc/ -o README.md rimraf doc",
+        "precommit": "yarn apidoc"
     },
     "repository": {
         "type": "git",
@@ -58,6 +59,7 @@
         "bson-objectid": "^1.1.5",
         "eslint": "^5.0.1",
         "eslint-plugin-jest": "^21.17.0",
+        "husky": "^0.14.3",
         "jest": "^23.4.1",
         "jsonfile": "^2.4.0",
         "lodash": "^4.17.4",

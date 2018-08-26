@@ -349,7 +349,7 @@ app.post('/admin/todoForUser', getUserEmailFromToken, (req, res) => {
  * @apiHeader {String} Authorization Token
  * @apiParam {String} email Mandatory email.
  *
- * @apiSuccess {Object} mongoResponse
+ * @apiSuccess {Object} mongoResponse.
  * @apiError (403) Error
  *
  */

@@ -1,6 +1,3 @@
-// if (process.env.NODE_ENV !== 'development') {
-//     require('dotenv').load();
-// }
 const OAuth2Client = require('google-auth-library').OAuth2Client;
 const CLIENT_ID = '171417293160-02sar26733jopm7hvfb6e5cgk4mq21d7.apps.googleusercontent.com';
 const client = new OAuth2Client(CLIENT_ID);

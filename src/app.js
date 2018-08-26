@@ -1,9 +1,6 @@
-// if (process.env.NODE_ENV !== 'development') {
-//     require('dotenv').load();
-// }
 import { getUserEmailFromToken } from './auth/auth';
 const express = require('express');
-var cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
 const logger = require('volleyball');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');

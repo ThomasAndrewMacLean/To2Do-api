@@ -12,7 +12,7 @@
         "build": "npm run clean && mkdir -p dist && npm run rollup",
         "rollup": "./node_modules/.bin/rollup -c",
         "test": "jest",
-        "apidoc": "apidoc -i src/ && apidoc-markdown2 -p doc/ -o README.md",
+        "apidoc": "apidoc -i src/ -o docs && apidoc-markdown2 -p doc/ -o README.md",
         "precommit": "yarn apidoc"
     },
     "repository": {

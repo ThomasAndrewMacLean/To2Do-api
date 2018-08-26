@@ -305,6 +305,8 @@ app.get('/todoos', getUserEmailFromToken, (req, res) => {
         .then(findUser => {
             let userTodos = db.get(req.token);
             userTodos.find().then(d => {
+                console.log('GETTING TODOOS');
+
                 let td = d.forEach(dd => (dd.todo = decrypt(dd.todo)));
 
                 console.log(td);

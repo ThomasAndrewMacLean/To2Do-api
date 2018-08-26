@@ -9,6 +9,10 @@ export let encrypt = text => {
     return crypted;
 };
 export let decrypt = text => {
+    console.log('DECRYPTING 🔬');
+
+    console.log(text);
+
     try {
         var decipher = crypto.createDecipher(algorithm, password);
         var dec = decipher.update(text, 'hex', 'utf8');

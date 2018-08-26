@@ -266,6 +266,7 @@ app.post('/addtodo', getUserEmailFromToken, (req, res) => {
     userTodos
         .insert({
             todo: req.body.todo,
+            timeStamp: req.body.timeStamp,
             done: false
         })
         .then(r => res.status(200).json(r));

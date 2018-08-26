@@ -6,4 +6,5 @@ yarn-debug.log*
 yarn-error.log*
 .cache
 dist
-doc
+doc/api_project.js
+doc/api_project.json

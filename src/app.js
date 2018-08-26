@@ -123,6 +123,7 @@ app.post('/login', (req, res) => {
                     res.status(403).json({
                         message: 'social login?'
                     });
+                    return;
                 }
 
                 bcrypt.compare(password, user.password, function(err, resp) {

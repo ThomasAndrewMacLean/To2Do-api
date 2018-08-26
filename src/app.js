@@ -113,46 +113,52 @@ app.post('/login', (req, res) => {
     const { password, email } = req.body;
     console.log('EMAIL:' + email);
     console.log('PASSWORD:' + password);
-
-    users
-        .findOne({
-            email
-        })
-        .then(user => {
-            if (!user.password) {
-                res.status(403).json({
-                    message: 'social login?'
-                });
-            }
-
-            bcrypt.compare(password, user.password, function(err, resp) {
-                if (resp) {
-                    jwt.sign(
-                        {
-                            user
-                        },
-                        process.env.JWT_SECRET,
-                        {
-                            expiresIn: '3000000s'
-                        },
-                        (err, token) => {
-                            res.status(200).json({
-                                token
-                            });
-                        }
-                    );
-                } else {
+    try {
+        users
+            .findOne({
+                email
+            })
+            .then(user => {
+                if (!user.password) {
                     res.status(403).json({
-                        message: 'wrong password'
+                        message: 'social login?'
                     });
                 }
-            });
-        })
-        .catch(() =>
-            res.status(403).json({
-                message: 'wrong user'
+
+                bcrypt.compare(password, user.password, function(err, resp) {
+                    if (resp) {
+                        jwt.sign(
+                            {
+                                user
+                            },
+                            process.env.JWT_SECRET,
+                            {
+                                expiresIn: '3000000s'
+                            },
+                            (err, token) => {
+                                res.status(200).json({
+                                    token
+                                });
+                            }
+                        );
+                    } else {
+                        res.status(403).json({
+                            message: 'wrong password'
+                        });
+                    }
+                });
             })
-        );
+            .catch(() =>
+                res.status(403).json({
+                    message: 'wrong user'
+                })
+            );
+    } catch (error) {
+        console.log('IT WENT APESH*T 🐒');
+        
+        console.log(error);
+        
+    }
 });
 
 app.get('/confirm/:encryption', (req, res) => {

@@ -267,7 +267,8 @@ app.post('/addtodo', getUserEmailFromToken, (req, res) => {
         .insert({
             todo: encrypt(req.body.todo),
             timeStamp: req.body.timeStamp,
-            done: false
+            done: false,
+            encrypt: true
         })
         .then(r => res.status(200).json(r));
 });
@@ -307,11 +308,9 @@ app.get('/todoos', getUserEmailFromToken, (req, res) => {
             userTodos.find().then(d => {
                 console.log('GETTING TODOOS');
 
-                let td = d.forEach(dd => (dd.todo = decrypt(dd.todo)));
+                d.filter(td => td.encrypt).forEach(dd => (dd.todo = decrypt(dd.todo)));
 
                 console.log(d);
-
-                console.log(td);
 
                 res.status(200).json({
                     todoos: d,

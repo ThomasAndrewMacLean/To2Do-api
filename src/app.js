@@ -309,10 +309,12 @@ app.get('/todoos', getUserEmailFromToken, (req, res) => {
 
                 let td = d.forEach(dd => (dd.todo = decrypt(dd.todo)));
 
+                console.log(d);
+
                 console.log(td);
 
                 res.status(200).json({
-                    todoos: td,
+                    todoos: d,
                     user: findUser.name || req.token
                 });
             });

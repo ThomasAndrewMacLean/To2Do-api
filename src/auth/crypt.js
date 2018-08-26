@@ -17,9 +17,13 @@ export let decrypt = text => {
         var decipher = crypto.createDecipher(algorithm, password);
         var dec = decipher.update(text, 'hex', 'utf8');
         dec += decipher.final('utf8');
+        console.log(dec);
+
         return dec;
     } catch (error) {
         console.log(error);
+        console.log('IT WENT BAD, RETURNING ' + text);
+
         return text;
     }
 };

@@ -308,7 +308,11 @@ app.get('/todoos', getUserEmailFromToken, (req, res) => {
             userTodos.find().then(d => {
                 console.log('GETTING TODOOS');
 
-                d.filter(td => td.encrypt).forEach(dd => (dd.todo = decrypt(dd.todo)));
+                d.forEach(dd => {
+                    if (dd.encrypt) {
+                        dd.todo = decrypt(dd.todo);
+                    }
+                });
 
                 console.log(d);
 

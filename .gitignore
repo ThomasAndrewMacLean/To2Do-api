@@ -5,3 +5,5 @@ secret.txt
 yarn-debug.log*
 yarn-error.log*
 .cache
+dist
+

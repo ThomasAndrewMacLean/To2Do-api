@@ -305,7 +305,12 @@ app.get('/todoos', getUserEmailFromToken, (req, res) => {
         .then(findUser => {
             let userTodos = db.get(req.token);
             userTodos.find().then(d => {
-                res.status(200).json({ todoos: d, user: findUser.name || req.token });
+                res
+                    .status(200)
+                    .json({
+                        todoos: d.forEach(td => (td.todo = decrypt(td.todo))),
+                        user: findUser.name || req.token
+                    });
             });
         });
 });

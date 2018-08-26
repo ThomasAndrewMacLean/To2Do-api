@@ -270,7 +270,10 @@ app.post('/addtodo', getUserEmailFromToken, (req, res) => {
             done: false,
             encrypt: true
         })
-        .then(r => res.status(200).json(r));
+        .then(r => {
+            r.todo = decrypt(r.todo);
+            return res.status(200).json(r);
+        });
 });
 
 app.post('/toggleDone', getUserEmailFromToken, (req, res) => {

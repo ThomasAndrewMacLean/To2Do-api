@@ -111,6 +111,9 @@ app.post('/signup', (req, res) => {
 
 app.post('/login', (req, res) => {
     const { password, email } = req.body;
+    console.log('EMAIL:' + email);
+    console.log('PASSWORD:' + password);
+
     users
         .findOne({
             email

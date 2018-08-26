@@ -265,7 +265,7 @@ app.post('/addtodo', getUserEmailFromToken, (req, res) => {
     let userTodos = db.get(req.token);
     userTodos
         .insert({
-            todo: req.body.todo,
+            todo: encrypt(req.body.todo),
             timeStamp: req.body.timeStamp,
             done: false
         })

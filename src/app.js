@@ -110,6 +110,10 @@ app.post('/signup', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
+    console.log('*****************');
+    console.log(req.body);
+    console.log('*****************');
+
     const { password, email } = req.body;
     console.log('EMAIL:' + email);
     console.log('PASSWORD:' + password);
@@ -156,9 +160,8 @@ app.post('/login', (req, res) => {
             );
     } catch (error) {
         console.log('IT WENT APESH*T 🐒');
-        
+
         console.log(error);
-        
     }
 });
 

@@ -1,0 +1,1 @@
+{  "title": "Custom apiDoc browser title",  "url": "https://api.github.com/v1",  "name": "to2do-api",  "version": "1.0.0",  "description": "backend for todo app",  "sampleUrl": false,  "defaultVersion": "0.0.0",  "apidoc": "0.3.0",  "generator": {    "name": "apidoc",    "time": "2018-08-26T15:55:04.454Z",    "url": "http://apidocjs.com",    "version": "0.17.6"  }}

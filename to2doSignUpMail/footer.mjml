@@ -4,7 +4,7 @@
     <mj-text color="#444">
       made by:
       <a href="mailto:thomas.maclean+work@gmail.com">thomas maclean</a>
-      <span>🤖</span> {{{year}}}
+      <span>🤖</span> © {{{year}}}
     </mj-text>
   </mj-column>
 

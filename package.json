@@ -8,11 +8,12 @@
         "start": "node dist/server_production.js",
         "predev": "npm run -s build",
         "dev": "nodemon dist/server_production.js",
-        "clean": "rimraf dist",
-        "build": "npm run clean && mkdir -p dist && npm run rollup",
+        "clean": "rimraf dist && rimraf public",
+        "build": "npm run clean && mkdir -p dist && mkdir -p public && npm run makeMail && npm run rollup",
         "rollup": "./node_modules/.bin/rollup -c",
         "test": "jest",
         "apidoc": "apidoc -i src/ -o docs/ && apidoc-markdown2 -p docs/ -o README.md",
+        "makeMail": "mjml to2doSignUpMail/index.mjml --config.minify true -o public/mail.html",
         "precommit": "yarn apidoc"
     },
     "repository": {
@@ -63,6 +64,7 @@
         "jest": "^23.4.1",
         "jsonfile": "^2.4.0",
         "lodash": "^4.17.4",
+        "mjml": "^4.1.2",
         "nodemon": "^1.17.5",
         "q": "^1.4.1",
         "sinon": "^6.1.3",

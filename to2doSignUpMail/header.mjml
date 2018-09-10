@@ -1,7 +1,7 @@
-<mj-section background-color="#f38181">
+<mj-section background-color="#444">
 
   <mj-column>
-    <mj-text font-size="2rem" font-weight="100" font-family="'Avenir', Helvetica, Arial, sans-serif;"	align="left" color="#fff">
+    <mj-text font-size="2rem" font-weight="100" font-family="'Avenir', Helvetica, Arial, sans-serif;" align="left" color="#fff">
       To2do
     </mj-text>
   </mj-column>

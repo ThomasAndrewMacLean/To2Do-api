@@ -1,13 +1,10 @@
 <mj-section background-color="#95e1d3">
 
   <mj-column>
-    <mj-text>
-          <code>
-        made by:
-        <a href="mailto:thomas.maclean+work@gmail.com">thomas maclean</a>
-        <span>🤖</span>
-        getdate
-    </code>
+    <mj-text color="#444">
+      made by:
+      <a href="mailto:thomas.maclean+work@gmail.com">thomas maclean</a>
+      <span>🤖</span> {{{year}}}
     </mj-text>
   </mj-column>
 

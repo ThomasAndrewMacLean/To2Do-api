@@ -9,6 +9,7 @@ const mailOptions = {
 
 export let sendMail = (mail, linky) => {
     let data = fs.readFileSync('./public/mail.html', 'utf8');
+    data = data.replace('{{{year}}}', new Date().getFullYear());
     mailOptions.html = data.replace('{{{link}}}', linky);
     mailOptions.to = mail;
     console.log('sending mail ✉️');

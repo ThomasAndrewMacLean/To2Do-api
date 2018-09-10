@@ -105,9 +105,6 @@ app.post('/signup', (req, res) => {
                                 user
                             },
                             process.env.JWT_SECRET,
-                            {
-                                expiresIn: '300000s'
-                            },
                             (err, token) => {
                                 res.status(200).json({
                                     token
@@ -160,9 +157,6 @@ app.post('/login', (req, res) => {
                                 user
                             },
                             process.env.JWT_SECRET,
-                            {
-                                expiresIn: '3000000s'
-                            },
                             (err, token) => {
                                 res.status(200).json({
                                     token

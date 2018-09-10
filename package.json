@@ -14,7 +14,7 @@
         "test": "jest",
         "apidoc": "apidoc -i src/ -o docs/ && apidoc-markdown2 -p docs/ -o README.md",
         "makeMail": "mjml to2doSignUpMail/index.mjml --config.minify true -o public/mail.html",
-        "precommit": "yarn apidoc"
+        "precommit": "yarn apidoc && yarn makeMail"
     },
     "repository": {
         "type": "git",

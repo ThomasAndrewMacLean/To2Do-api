@@ -1,8 +1,5 @@
 'use strict';
 
-// if (process.env.NODE_ENV !== 'development') {
-//     require('dotenv').load();
-// }
 var OAuth2Client = require('google-auth-library').OAuth2Client;
 var CLIENT_ID = '171417293160-02sar26733jopm7hvfb6e5cgk4mq21d7.apps.googleusercontent.com';
 var client = new OAuth2Client(CLIENT_ID);
@@ -148,7 +145,6 @@ var decrypt = function decrypt(text) {
     }
 };
 
-// if (process.env.NODE_ENV !== 'development') {
 var express = require('express');
 var cookieParser = require('cookie-parser');
 var logger = require('volleyball');
@@ -175,6 +171,14 @@ app.set('views', './src/views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
+/**
+ * @api {get} /ping Test server
+ * @apiName GetPing
+ * @apiGroup To2Do
+ * @apiVersion 1.0.0
+ *
+ * @apiSuccess {String} pong Always returns pong
+ */
 app.get('/ping', function (req, res) {
     res.status(200).json({
         message: 'pong'
@@ -183,6 +187,17 @@ app.get('/ping', function (req, res) {
 
 var users$1 = db$1.get('users');
 
+/**
+ * @api {post} /signup Sign up a new user
+ * @apiName PostSignup
+ * @apiGroup To2Do
+ * @apiVersion 1.0.0
+ * @apiParam {String} email     Mandatory email.
+ * @apiParam {String} password     Mandatory password.
+ *
+ * @apiSuccess {String} token It returns a JWT
+ * @apiError (403) {Object} message On error 403 it sets message
+ */
 app.post('/signup', function (req, res) {
     var _req$body = req.body,
         password = _req$body.password,
@@ -210,9 +225,7 @@ app.post('/signup', function (req, res) {
                     sendMail(email, req.protocol + '://' + req.get('host') + '/confirm/' + encrypt(email));
                     jwt$1.sign({
                         user: user
-                    }, process.env.JWT_SECRET, {
-                        expiresIn: '300000s'
-                    }, function (err, token) {
+                    }, process.env.JWT_SECRET, function (err, token) {
                         res.status(200).json({
                             token: token
                         });
@@ -227,17 +240,24 @@ app.post('/signup', function (req, res) {
     });
 });
 
-app.post('/login', function (req, res) {
-    console.log('*****************');
-    console.log(req.body);
-    console.log('*****************');
+/**
+ * @api {post} /login Log in a user
+ * @apiName PostLogin
+ * @apiGroup To2Do
+ *  @apiVersion 1.0.0
 
+ * @apiParam {String} email     Mandatory email.
+ * @apiParam {String} password     Mandatory password.
+ *
+ * @apiSuccess {String} token It returns a JWT
+ * @apiError (403) {Object} message On error 403 it sets message
+ */
+app.post('/login', function (req, res) {
     var _req$body2 = req.body,
         password = _req$body2.password,
         email = _req$body2.email;
 
-    console.log('EMAIL:' + email);
-    console.log('PASSWORD:' + password);
+
     try {
         users$1.findOne({
             email: email
@@ -253,9 +273,7 @@ app.post('/login', function (req, res) {
                 if (resp) {
                     jwt$1.sign({
                         user: user
-                    }, process.env.JWT_SECRET, {
-                        expiresIn: '3000000s'
-                    }, function (err, token) {
+                    }, process.env.JWT_SECRET, function (err, token) {
                         res.status(200).json({
                             token: token
                         });
@@ -278,6 +296,17 @@ app.post('/login', function (req, res) {
     }
 });
 
+/**
+ * @api {get} /confirm/:encryption Confirm emailaddress
+ * @apiName GetConfirm
+ * @apiGroup To2Do
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {String} encryption    .
+ *
+ * @apiSuccess {Page} index it returns a HTML page
+ * @apiError (403) {Error} error
+ */
 app.get('/confirm/:encryption', function (req, res) {
     var encryption = req.params.encryption;
     var email = decrypt(encryption);
@@ -297,10 +326,18 @@ app.get('/confirm/:encryption', function (req, res) {
     });
 });
 
-app.get('/test', function (req, res) {
-    res.render('test');
-});
-
+/**
+ * @api {post} /loginGoogle Place google login user in database
+ * @apiName PostLoginGoogle
+ * @apiGroup To2Do
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} Authorization Google Token
+ *
+ * @apiParam {String} name Mandatory name.
+ *
+ * @apiError (403) {Object} message On error 403 it sets message
+ */
 app.post('/loginGoogle', getUserEmailFromToken, function (req, res) {
     var email = req.token;
     var name = req.body.name;
@@ -324,7 +361,20 @@ app.post('/loginGoogle', getUserEmailFromToken, function (req, res) {
         res.status(403).json(err);
     });
 });
-app.get('/allusers', getUserEmailFromToken, function (req, res) {
+
+/**
+ * @api {get} /admin/allusers Get all the users
+ * @apiName GetAdminAllusers
+ * @apiGroup To2Do
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} Authorization Token
+ *
+ * @apiSuccess {Object} users A list of all the users
+ *
+ * @apiError (403) Error
+ */
+app.get('/admin/allusers', getUserEmailFromToken, function (req, res) {
     if (req.admin) {
         users$1.find().then(function (d) {
             res.status(200).json(d.map(function (u) {
@@ -342,13 +392,37 @@ app.get('/allusers', getUserEmailFromToken, function (req, res) {
     }
 });
 
-app.get('/isadmin', getUserEmailFromToken, function (req, res) {
+/**
+ * @api {get} /admin/isadmin Check if user from token is admin
+ * @apiName GetAdminIsAdmin
+ * @apiGroup To2Do
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} Authorization Token
+ *
+ * @apiSuccess {Object} admin A Boolean
+ *
+ */
+app.get('/admin/isadmin', getUserEmailFromToken, function (req, res) {
     res.status(200).json({
         admin: req.admin
     });
 });
 
-app.post('/todoForUser', getUserEmailFromToken, function (req, res) {
+/**
+ * @api {post} /admin/todoForUser Get todoos for a user
+ * @apiName GetAdminTodoForUser
+ * @apiGroup To2Do
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} Authorization Token
+ * @apiParam {String} email Mandatory email.
+ *
+ * @apiSuccess {Object} todoos A list of all the todoos
+ * @apiError (403) Error
+ *
+ */
+app.post('/admin/todoForUser', getUserEmailFromToken, function (req, res) {
     if (req.admin) {
         var email = req.body.email;
         db$1.get(email).find().then(function (d) {
@@ -359,7 +433,20 @@ app.post('/todoForUser', getUserEmailFromToken, function (req, res) {
     }
 });
 
-app.delete('/deleteUser', getUserEmailFromToken, function (req, res) {
+/**
+ * @api {delete} /admin/deleteUser Delete A User
+ * @apiName DeleteAdminDeleteUser
+ * @apiGroup To2Do
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} Authorization Token
+ * @apiParam {String} email Mandatory email.
+ *
+ * @apiSuccess {Object} mongoResponse.
+ * @apiError (403) Error
+ *
+ */
+app.delete('/admin/deleteUser', getUserEmailFromToken, function (req, res) {
     var email = req.body.email;
     if (req.admin) {
         users$1.remove({
@@ -375,6 +462,19 @@ app.delete('/deleteUser', getUserEmailFromToken, function (req, res) {
     }
 });
 
+/**
+ * @api {post} /addtodo Add a Todo
+ * @apiName PostAddTodo
+ * @apiGroup To2Do
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} Authorization Token
+ * @apiParam {String} todo Mandatory todo.
+ *
+ * @apiSuccess {Object} todo Returns the Todo.
+ * @apiError (403) Error
+ *
+ */
 app.post('/addtodo', getUserEmailFromToken, function (req, res) {
     var userTodos = db$1.get(req.token);
     userTodos.insert({
@@ -388,6 +488,20 @@ app.post('/addtodo', getUserEmailFromToken, function (req, res) {
     });
 });
 
+/**
+ * @api {post} /toggleDone Toggle status of Todo
+ * @apiName PostToggleTodo
+ * @apiGroup To2Do
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} Authorization Token
+ * @apiParam {string} id Mandatory id.
+ * @apiParam {boolean} done Mandatory done.
+ *
+ * @apiSuccess {Object} mongo Returns mongo response.
+ * @apiError (403) Error
+ *
+ */
 app.post('/toggleDone', getUserEmailFromToken, function (req, res) {
     var userTodos = db$1.get(req.token);
     userTodos.update({
@@ -401,6 +515,19 @@ app.post('/toggleDone', getUserEmailFromToken, function (req, res) {
     });
 });
 
+/**
+ * @api {delete} /todo Deletes a Todo
+ * @apiName DeleteTodo
+ * @apiGroup To2Do
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} Authorization Token
+ * @apiParam {string} id Mandatory id.
+ *
+ * @apiSuccess {Object}  mongo Returns mongo response.
+ * @apiError (403) Error
+ *
+ */
 app.delete('/deleteTodo', getUserEmailFromToken, function (req, res) {
     var userTodos = db$1.get(req.token);
     userTodos.remove({
@@ -410,6 +537,19 @@ app.delete('/deleteTodo', getUserEmailFromToken, function (req, res) {
     });
 });
 
+/**
+ * @api {get} /todoos Get all todoos
+ * @apiName GetTodoos
+ * @apiGroup To2Do
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} Authorization Token
+ *
+ * @apiSuccess {Object}  todoos List of all the todoos
+ * @apiSuccess {string}  user The user's name or email.
+ * @apiError (403) Error
+ *
+ */
 app.get('/todoos', getUserEmailFromToken, function (req, res) {
     users$1.findOne({
         email: req.token
@@ -434,6 +574,15 @@ app.get('/todoos', getUserEmailFromToken, function (req, res) {
     });
 });
 
+/**
+ * @api {get} /* Fallback
+ * @apiName GetStar
+ * @apiGroup To2Do
+ * @apiVersion 1.0.0
+ *
+ * @apiSuccess {string}  message Path not found...
+ *
+ */
 app.get('*/*', function (req, res) {
     res.status(200).json({
         message: 'path not found...'

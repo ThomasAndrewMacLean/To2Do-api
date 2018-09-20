@@ -1,6 +1,8 @@
 <a name="top"></a>
 # to2do-api v1.0.0
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/ThomasAndrewMacLean/To2Do-api.svg)](https://greenkeeper.io/)
+
 backend for todo app, https://thomasandrewmaclean.github.io/To2Do-api/
 
 - [To2Do](#to2do)

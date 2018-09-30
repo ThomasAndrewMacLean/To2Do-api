@@ -18,6 +18,7 @@ backend for todo app, https://thomasandrewmaclean.github.io/To2Do-api/
 	- [Place google login user in database](#place-google-login-user-in-database)
 	- [Sign up a new user](#sign-up-a-new-user)
 	- [Toggle status of Todo](#toggle-status-of-todo)
+	- [Update the Todo](#update-the-todo)
 	
 
 
@@ -373,6 +374,37 @@ backend for todo app, https://thomasandrewmaclean.github.io/To2Do-api/
 |:---------|:-----------|:--------------------------------------|
 |  id | string | <p>Mandatory id.</p>|
 |  done | boolean | <p>Mandatory done.</p>|
+
+
+
+### Success 200
+
+| Name     | Type       | Description                           |
+|:---------|:-----------|:--------------------------------------|
+|  mongo | Object | <p>Returns mongo response.</p>|
+
+## <a name='update-the-todo'></a> Update the Todo
+[Back to top](#top)
+
+
+
+	POST /updateDone
+
+### Headers
+
+| Name    | Type      | Description                          |
+|---------|-----------|--------------------------------------|
+| Authorization | String | <p>Token</p>|
+
+
+
+
+### Parameter Parameters
+
+| Name     | Type       | Description                           |
+|:---------|:-----------|:--------------------------------------|
+|  id | string | <p>Mandatory id.</p>|
+|  todo | string | <p>Mandatory updated todo.</p>|
 
 
 

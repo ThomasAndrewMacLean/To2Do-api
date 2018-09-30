@@ -94,6 +94,7 @@ var mailOptions = {
 
 var sendMail = function sendMail(mail, linky) {
     var data = fs.readFileSync('./public/mail.html', 'utf8');
+    data = data.replace('{{{year}}}', new Date().getFullYear());
     mailOptions.html = data.replace('{{{link}}}', linky);
     mailOptions.to = mail;
     console.log('sending mail ✉️');

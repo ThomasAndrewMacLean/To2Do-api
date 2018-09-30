@@ -419,6 +419,36 @@ app.post('/toggleDone', getUserEmailFromToken, (req, res) => {
 });
 
 /**
+ * @api {post} /updateDone Update the Todo
+ * @apiName PutUpdateDone
+ * @apiGroup To2Do
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} Authorization Token
+ * @apiParam {string} id Mandatory id.
+ * @apiParam {string} todo Mandatory updated todo.
+ *
+ * @apiSuccess {Object} mongo Returns mongo response.
+ * @apiError (403) Error
+ *
+ */
+app.post('/updateDone', getUserEmailFromToken, (req, res) => {
+    let userTodos = db.get(req.token);
+    userTodos
+        .update(
+            {
+                _id: req.body.id
+            },
+            {
+                $set: {
+                    todo: encrypt(req.body.todo)
+                }
+            }
+        )
+        .then(d => res.status(200).json(d));
+});
+
+/**
  * @api {delete} /todo Deletes a Todo
  * @apiName DeleteTodo
  * @apiGroup To2Do

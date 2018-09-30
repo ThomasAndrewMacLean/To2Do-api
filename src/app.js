@@ -432,7 +432,7 @@ app.post('/toggleDone', getUserEmailFromToken, (req, res) => {
  * @apiError (403) Error
  *
  */
-app.post('/updateDone', getUserEmailFromToken, (req, res) => {
+app.post('/updateTodo', getUserEmailFromToken, (req, res) => {
     let userTodos = db.get(req.token);
     userTodos
         .update(
@@ -496,6 +496,7 @@ app.get('/todoos', getUserEmailFromToken, (req, res) => {
                 d.forEach(dd => {
                     if (dd.encrypt) {
                         dd.todo = decrypt(dd.todo);
+                        dd.timeStamp = new Date( parseInt( dd._id.toString().substring(0,8), 16 ) * 1000 );
                     }
                 });
 

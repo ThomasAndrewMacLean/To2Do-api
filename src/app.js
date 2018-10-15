@@ -249,6 +249,7 @@ app.post('/loginGoogle', getUserEmailFromToken, (req, res) => {
                 console.log(newUser);
 
                 users.insert(newUser);
+                res.status(200).json(newUser);
             }
         })
         .catch(err => {
@@ -496,7 +497,9 @@ app.get('/todoos', getUserEmailFromToken, (req, res) => {
                 d.forEach(dd => {
                     if (dd.encrypt) {
                         dd.todo = decrypt(dd.todo);
-                        dd.timeStamp = new Date( parseInt( dd._id.toString().substring(0,8), 16 ) * 1000 );
+                        dd.timeStamp = new Date(
+                            parseInt(dd._id.toString().substring(0, 8), 16) * 1000
+                        );
                     }
                 });
 
